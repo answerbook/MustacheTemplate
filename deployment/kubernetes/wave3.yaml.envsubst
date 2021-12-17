@@ -43,7 +43,7 @@ items:
             - image: "quay.io/razee/mustachetemplate:${WAVE3_VERSION}"
               resources:
                 limits:
-                  memory: 200Mi
+                  memory: 1Gi
                   cpu: 100m
                 requests:
                   memory: 75Mi
