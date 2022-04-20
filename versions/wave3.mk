@@ -1,0 +1,1 @@
+WAVE3_VERSION := 1.1.0
