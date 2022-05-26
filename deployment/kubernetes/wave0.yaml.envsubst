@@ -93,28 +93,14 @@ items:
       group: deploy.razee.io
       # list of versions supported by this CustomResourceDefinition
       versions:
-        - name: v1alpha1
-          # Each version can be enabled/disabled by Served flag.
-          served: true
-          # One and only one version must be marked as the storage version.
-          storage: false
-          schema:
-            # openAPIV3Schema is the schema for validating custom objects.
-            openAPIV3Schema:
-              type: object
-              required: [spec]
-              properties:
-                spec:
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
-                status:
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
         - name: v1alpha2
           # Each version can be enabled/disabled by Served flag.
           served: true
           # One and only one version must be marked as the storage version.
           storage: true
+          subresources:
+            # status enables the status subresource.
+            status: {}
           schema:
             # openAPIV3Schema is the schema for validating custom objects.
             openAPIV3Schema:
@@ -238,7 +224,9 @@ items:
                             properties:
                               configMapKeyRef:
                                 type: object
-                                required: [name, key]
+                                oneOf:
+                                  - required: [key, name]
+                                  - required: [key, matchLabels]
                                 properties:
                                   name:
                                     type: string
@@ -249,9 +237,15 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                               secretKeyRef:
                                 type: object
-                                required: [name, key]
+                                oneOf:
+                                  - required: [key, name]
+                                  - required: [key, matchLabels]
                                 properties:
                                   name:
                                     type: string
@@ -262,9 +256,15 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                               genericKeyRef:
                                 type: object
-                                required: [apiVersion, kind, name, key]
+                                oneOf:
+                                  - required: [apiVersion, kind, name, key]
+                                  - required: [apiVersion, kind, matchLabels, key]
                                 properties:
                                   apiVersion:
                                     type: string
@@ -279,6 +279,10 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                     templates:
                       type: array
                       items:
