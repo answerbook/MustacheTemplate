@@ -91,6 +91,18 @@ items:
     spec:
       # group name to use for REST API: /apis/<group>/<version>
       group: deploy.razee.io
+      # either Namespaced or Cluster
+      scope: Namespaced
+      names:
+        # plural name to be used in the URL: /apis/<group>/<version>/<plural>
+        plural: mustachetemplates
+        # singular name to be used as an alias on the CLI and for display
+        singular: mustachetemplate
+        # kind is normally the CamelCased singular type. Your resource manifests use this.
+        kind: MustacheTemplate
+        # shortNames allow shorter string to match your resource on the CLI
+        shortNames:
+          - mtp
       # list of versions supported by this CustomResourceDefinition
       versions:
         - name: v1alpha2
@@ -98,6 +110,9 @@ items:
           served: true
           # One and only one version must be marked as the storage version.
           storage: true
+          subresources:
+            # status enables the status subresource.
+            status: {}
           schema:
             # openAPIV3Schema is the schema for validating custom objects.
             openAPIV3Schema:
@@ -293,18 +308,3 @@ items:
                 status:
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
-      # either Namespaced or Cluster
-      scope: Namespaced
-      names:
-        # plural name to be used in the URL: /apis/<group>/<version>/<plural>
-        plural: mustachetemplates
-        # singular name to be used as an alias on the CLI and for display
-        singular: mustachetemplate
-        # kind is normally the CamelCased singular type. Your resource manifests use this.
-        kind: MustacheTemplate
-        # shortNames allow shorter string to match your resource on the CLI
-        shortNames:
-          - mtp
-      subresources:
-        # status enables the status subresource.
-        status: {}
