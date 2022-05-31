@@ -98,9 +98,6 @@ items:
           served: true
           # One and only one version must be marked as the storage version.
           storage: true
-          subresources:
-            # status enables the status subresource.
-            status: {}
           schema:
             # openAPIV3Schema is the schema for validating custom objects.
             openAPIV3Schema:
