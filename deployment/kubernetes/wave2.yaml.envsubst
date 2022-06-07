@@ -1,3 +1,4 @@
+
 apiVersion: v1
 kind: List
 metadata:
@@ -78,7 +79,7 @@ items:
                 name: razeedeploy-config
                 defaultMode: 400
                 optional: true
-  - apiVersion: apiextensions.k8s.io/v1beta1
+  - apiVersion: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
     metadata:
       # name must match the spec fields below, and be in the form: <plural>.<group>
@@ -88,33 +89,33 @@ items:
         razee.io/commit-sha: "${GIT_SHA1}"
         razee.io/build-tag: "${BUILD_TAG}"
         razee.io/branch: "${GIT_BRANCH}"
+      labels:
+        deploy.razee.io/Reconcile: "false"
     spec:
       # group name to use for REST API: /apis/<group>/<version>
       group: deploy.razee.io
+      # either Namespaced or Cluster
+      scope: Namespaced
+      names:
+        # plural name to be used in the URL: /apis/<group>/<version>/<plural>
+        plural: mustachetemplates
+        # singular name to be used as an alias on the CLI and for display
+        singular: mustachetemplate
+        # kind is normally the CamelCased singular type. Your resource manifests use this.
+        kind: MustacheTemplate
+        # shortNames allow shorter string to match your resource on the CLI
+        shortNames:
+          - mtp
       # list of versions supported by this CustomResourceDefinition
       versions:
-        - name: v1alpha1
-          # Each version can be enabled/disabled by Served flag.
-          served: true
-          # One and only one version must be marked as the storage version.
-          storage: false
-          schema:
-            # openAPIV3Schema is the schema for validating custom objects.
-            openAPIV3Schema:
-              type: object
-              required: [spec]
-              properties:
-                spec:
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
-                status:
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
         - name: v1alpha2
           # Each version can be enabled/disabled by Served flag.
           served: true
           # One and only one version must be marked as the storage version.
           storage: true
+          subresources:
+            # status enables the status subresource.
+            status: {}
           schema:
             # openAPIV3Schema is the schema for validating custom objects.
             openAPIV3Schema:
@@ -238,7 +239,9 @@ items:
                             properties:
                               configMapKeyRef:
                                 type: object
-                                required: [name, key]
+                                oneOf:
+                                  - required: [key, name]
+                                  - required: [key, matchLabels]
                                 properties:
                                   name:
                                     type: string
@@ -249,9 +252,15 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                               secretKeyRef:
                                 type: object
-                                required: [name, key]
+                                oneOf:
+                                  - required: [key, name]
+                                  - required: [key, matchLabels]
                                 properties:
                                   name:
                                     type: string
@@ -262,9 +271,15 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                               genericKeyRef:
                                 type: object
-                                required: [apiVersion, kind, name, key]
+                                oneOf:
+                                  - required: [apiVersion, kind, name, key]
+                                  - required: [apiVersion, kind, matchLabels, key]
                                 properties:
                                   apiVersion:
                                     type: string
@@ -279,6 +294,10 @@ items:
                                   type:
                                     type: string
                                     enum: [number, boolean, json, jsonString, base64]
+                                  matchLabels:
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                    additionalProperties: true
                     templates:
                       type: array
                       items:
@@ -292,18 +311,3 @@ items:
                 status:
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
-      # either Namespaced or Cluster
-      scope: Namespaced
-      names:
-        # plural name to be used in the URL: /apis/<group>/<version>/<plural>
-        plural: mustachetemplates
-        # singular name to be used as an alias on the CLI and for display
-        singular: mustachetemplate
-        # kind is normally the CamelCased singular type. Your resource manifests use this.
-        kind: MustacheTemplate
-        # shortNames allow shorter string to match your resource on the CLI
-        shortNames:
-          - mtp
-      subresources:
-        # status enables the status subresource.
-        status: {}
