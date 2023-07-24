@@ -44,11 +44,11 @@ items:
             - image: "quay.io/razee/mustachetemplate:${WAVE2_VERSION}"
               resources:
                 limits:
-                  memory: 1Gi
-                  cpu: 1.0
+                  memory: 2Gi
+                  cpu: '1'
                 requests:
-                  memory: 75Mi
-                  cpu: 40m
+                  memory: 2Gi
+                  cpu: '1'
               env:
                 - name: USER_AGENT_NAME
                   value: razee-io/mustachetemplate
