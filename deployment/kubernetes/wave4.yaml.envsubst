@@ -44,7 +44,7 @@ items:
               resources:
                 limits:
                   memory: 2Gi
-                  cpu: '1'
+                  cpu: '2'
                 requests:
                   memory: 2Gi
                   cpu: '1'
